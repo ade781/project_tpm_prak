@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:logger/logger.dart';
@@ -28,4 +29,29 @@ class ApiService {
       throw Exception("Error fetching data: $e");
     }
   }
+
+  static Future<Map<String, dynamic>> getMoviesDetail(String id) async {
+    final uri = Uri.parse('$baseUrl/$id');
+    _logger.i("GET $uri");
+
+    try {
+      final response = await http.get(uri).timeout(const Duration(seconds: 10));
+      _logger.i("Status : ${response.statusCode}");
+      _logger.t("Body : ${response.body}");
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> jsonMap = json.decode(response.body);
+        debugPrint("Response: $jsonMap");
+        return jsonMap;
+      } else {
+        _logger.e("Server error: ${response.statusCode}");
+        throw Exception("Server error: ${response.statusCode}");
+      }
+    } catch (e) {
+      _logger.e("Error fetching data: $e");
+      throw Exception("Error fetching data: $e");
+    }
+  }
+
+  static fetchMovieById(String id) {}
 }

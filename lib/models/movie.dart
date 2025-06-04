@@ -5,7 +5,7 @@ class Movie {
   final int duration;
   final String posterUrl;
   final String synopsis;
-  final String realeaseDate;
+  final String releaseDate;
   final String director;
   final List<String> cast;
   final double rating;
@@ -19,7 +19,7 @@ class Movie {
     required this.duration,
     required this.posterUrl,
     required this.synopsis,
-    required this.realeaseDate,
+    required this.releaseDate,
     required this.director,
     required this.cast,
     required this.rating,
@@ -35,10 +35,10 @@ class Movie {
       duration: json['duration'] ?? 0,
       posterUrl: json['posterUrl'] ?? '',
       synopsis: json['synopsis'] ?? '',
-      realeaseDate: json['realeaseDate'] ?? '',
+      releaseDate: json['releaseDate'] ?? '',
       director: json['director'] ?? '',
-      cast: List<String>.from(json['cast']) ?? [],
-      rating: (json['rating'] as num).toDouble() ?? 0.0,
+      cast: List<String>.from(json['cast']),
+      rating: (json['rating'] as num).toDouble(),
       language: json['language'] ?? '',
       trailerUrl: json['trailerUrl'] ?? '',
     );
