@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:project_tpm_prak/detail.dart';
 import 'package:project_tpm_prak/models/movie.dart';
+import 'package:project_tpm_prak/searchPage.dart';
 import 'package:project_tpm_prak/services/api_service.dart';
 
 class Home extends StatefulWidget {
@@ -14,6 +15,28 @@ class _HomeState extends State<Home> {
   Future<List<Movie>> fetchAllMovies() async {
     final rawList = await ApiService.fetchMovies('');
     return rawList.map((e) => Movie.fromJson(e)).toList();
+  }
+
+  Widget _searchBar() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+      child: TextField(
+        readOnly: true,
+        decoration: InputDecoration(
+          hintText: 'Search title movies...',
+          filled: true,
+          fillColor: Colors.white.withOpacity(0.1),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(30),
+            borderSide: BorderSide.none,
+          ),
+          prefixIcon: const Icon(Icons.search, color: Colors.white),
+        ),
+        style: const TextStyle(color: Colors.white),
+        onTap: () => Navigator.push(context,
+            MaterialPageRoute(builder: (context) => const Searchpage())),
+      ),
+    );
   }
 
   Widget _durationBadge(int duration) {
@@ -84,115 +107,133 @@ class _HomeState extends State<Home> {
     return SafeArea(
       top: false,
       child: Scaffold(
-        appBar: AppBar(
-          title: const Text('Movie App'),
-        ),
-        body: FutureBuilder<List<Movie>>(
-          future: fetchAllMovies(),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
-            } else if (snapshot.hasError) {
-              return Center(child: Text('Error: ${snapshot.error}'));
-            } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-              return const Center(child: Text('No movies found.'));
-            } else {
-              final movies = snapshot.data!;
-              return Padding(
-                padding: const EdgeInsets.all(6.0),
-                child: GridView.builder(
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 3,
-                    childAspectRatio: 1 / 1.3,
-                  ),
-                  itemCount: movies.length,
-                  itemBuilder: (context, index) {
-                    final movie = movies[index];
-                    return GestureDetector(
-                      onTap: () {
-                        debugPrint('Selected movie: ${movie.title} - ${movie.id}');
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => Detail(id: movie.id),
-                            ));
-                      },
-                      child: Card(
-                        color: Colors.white.withOpacity(0.08),
-                        elevation: 8,
-                        shadowColor: Colors.black26,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(9),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            // Poster
-                            Expanded(
-                              flex: 5,
-                              child: ClipRRect(
-                                borderRadius: const BorderRadius.vertical(
-                                  top: Radius.circular(9),
-                                ),
-                                child: Stack(
-                                  children: [
-                                    Image.network(
-                                      movie.posterUrl,
-                                      width: double.infinity,
-                                      height: double.infinity,
-                                      fit: BoxFit.cover,
-                                      errorBuilder:
-                                          (context, error, stackTrace) =>
-                                              const Center(
-                                        child: Icon(
-                                          Icons.image_not_supported,
-                                          color: Colors.white,
-                                          size: 50,
+          appBar: AppBar(
+            title: const Text('Movie App'),
+          ),
+          body: Column(
+            children: [
+              _searchBar(),
+              Expanded(
+                child: FutureBuilder<List<Movie>>(
+                  future: fetchAllMovies(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(child: CircularProgressIndicator());
+                    } else if (snapshot.hasError) {
+                      return Center(child: Text('Error: ${snapshot.error}'));
+                    } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                      return const Center(child: Text('No movies found.'));
+                    } else {
+                      final movies = snapshot.data!;
+                      return Padding(
+                        padding: const EdgeInsets.all(6.0),
+                        child: GridView.builder(
+                          itemCount: movies.length,
+                          gridDelegate:
+                              const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 3,
+                            childAspectRatio: 1 / 1.3,
+                            crossAxisSpacing: 6,
+                            mainAxisSpacing: 6,
+                          ),
+                          itemBuilder: (context, index) {
+                            final movie = movies[index];
+                            return Material(
+                              child: InkWell(
+                                borderRadius: BorderRadius.circular(
+                                    16), // efek ripple mengikuti bentuk Card
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          Detail(id: movie.id),
+                                    ),
+                                  );
+                                },
+                                child: Card(
+                                  color: Colors.white10,
+                                  elevation: 8,
+                                  shadowColor: Colors.black26,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(9),
+                                  ),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      // Poster
+                                      Expanded(
+                                        flex: 5,
+                                        child: ClipRRect(
+                                          borderRadius:
+                                              const BorderRadius.vertical(
+                                            top: Radius.circular(9),
+                                          ),
+                                          child: Stack(
+                                            children: [
+                                              Image.network(
+                                                movie.posterUrl,
+                                                width: double.infinity,
+                                                height: double.infinity,
+                                                fit: BoxFit.cover,
+                                                errorBuilder: (context, error,
+                                                        stackTrace) =>
+                                                    const Center(
+                                                  child: Icon(
+                                                    Icons.image_not_supported,
+                                                    color: Colors.white,
+                                                    size: 50,
+                                                  ),
+                                                ),
+                                              ),
+                                              Positioned(
+                                                top: 0,
+                                                left: 0,
+                                                child: _durationBadge(
+                                                    movie.duration),
+                                              ),
+                                              Positioned(
+                                                top: 0,
+                                                right: 0,
+                                                child:
+                                                    _ratingBadge(movie.rating),
+                                              ),
+                                            ],
+                                          ),
                                         ),
                                       ),
-                                    ),
-                                    Positioned(
-                                      top: 0,
-                                      left: 0,
-                                      child: _durationBadge(movie.duration),
-                                    ),
-                                    Positioned(
-                                      top: 0,
-                                      right: 0,
-                                      child: _ratingBadge(movie.rating),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                            // Title
-                            Expanded(
-                              flex: 2,
-                              child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Text(
-                                  movie.title,
-                                  style: const TextStyle(
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white,
+                                      // Title
+                                      Expanded(
+                                        flex: 2,
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: Text(
+                                            movie.title,
+                                            style: const TextStyle(
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.white,
+                                            ),
+                                            maxLines: 2,
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
                                 ),
                               ),
-                            ),
-                          ],
+                            );
+                          },
                         ),
-                      ),
-                    );
+                      );
+                    }
                   },
                 ),
-              );
-            }
-          },
-        ),
-      ),
+              ),
+            ],
+          )),
     );
   }
 }
