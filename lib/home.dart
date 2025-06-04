@@ -139,9 +139,11 @@ class _HomeState extends State<Home> {
                           itemBuilder: (context, index) {
                             final movie = movies[index];
                             return Material(
+                              color: Colors.transparent,
+                              borderRadius: BorderRadius.circular(9),
                               child: InkWell(
                                 borderRadius: BorderRadius.circular(
-                                    16), // efek ripple mengikuti bentuk Card
+                                    9), // efek ripple mengikuti bentuk Card
                                 onTap: () {
                                   Navigator.push(
                                     context,
