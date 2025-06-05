@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:project_tpm_prak/bottomNavBar.dart';
 import 'package:project_tpm_prak/home.dart';
 
 void main() {
@@ -36,6 +37,6 @@ class MyApp extends StatelessWidget {
             color: Colors.white,
           ),
         ),
-        home: Home());
+        home: BottomNavbar());
   }
 }
