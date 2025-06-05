@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:project_tpm_prak/models/movie.dart';
 import 'package:project_tpm_prak/services/api_service.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 class Detail extends StatefulWidget {
   final String id;
@@ -13,23 +14,61 @@ class Detail extends StatefulWidget {
 
 class _DetailState extends State<Detail> {
   bool isFav = false;
+  // Ubah dari 'late' menjadi nullable
+  YoutubePlayerController? _youtubeController;
+  bool _isPlayerReady = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // Tidak perlu inisialisasi di sini karena akan dilakukan di FutureBuilder
+  }
 
   Future<Movie> fetchMovieDetails() async {
     return ApiService.getMoviesDetail(widget.id).then(Movie.fromJson);
   }
 
-  void _launchTrailer(BuildContext context, String url) async {
+  void initializeYoutubePlayer(String youtubeUrl) {
+    String? videoId = YoutubePlayer.convertUrlToId(youtubeUrl);
+    if (videoId != null && videoId.isNotEmpty) {
+      // Hanya inisialisasi jika belum diinisialisasi atau jika videoId berubah
+      if (_youtubeController == null ||
+          _youtubeController!.initialVideoId != videoId) {
+        _youtubeController = YoutubePlayerController(
+          initialVideoId: videoId,
+          flags: const YoutubePlayerFlags(
+            autoPlay: false,
+            mute: false,
+            disableDragSeek: false,
+            loop: false,
+            isLive: false,
+            forceHD: false,
+            enableCaption: true,
+          ),
+        );
+        _isPlayerReady =
+            false; // Reset status ready saat video baru diinisialisasi
+      }
+    } else {
+      debugPrint('Invalid YouTube URL or video ID: $youtubeUrl');
+      _youtubeController =
+          null; // Pastikan controller null jika URL tidak valid
+      _isPlayerReady = false;
+    }
+  }
+
+  void _launchUrlExternal(BuildContext context, String url) async {
     final uri = Uri.tryParse(url);
     if (uri != null) {
       try {
         final launched = await launchUrl(
           uri,
-          mode: LaunchMode.platformDefault, // atau coba inAppBrowserView
+          mode: LaunchMode.externalApplication,
         );
-        if (!launched) throw 'Could not launch';
-      } catch (_) {
+        if (!launched) throw 'Could not launch $url';
+      } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Gagal membuka trailer')),
+          SnackBar(content: Text('Gagal membuka link: $e')),
         );
       }
     } else {
@@ -37,6 +76,20 @@ class _DetailState extends State<Detail> {
         const SnackBar(content: Text('URL tidak valid')),
       );
     }
+  }
+
+  @override
+  void deactivate() {
+    // Pastikan _youtubeController tidak null sebelum memanggil pause()
+    _youtubeController?.pause();
+    super.deactivate();
+  }
+
+  @override
+  void dispose() {
+    // Pastikan _youtubeController tidak null sebelum memanggil dispose()
+    _youtubeController?.dispose();
+    super.dispose();
   }
 
   @override
@@ -50,8 +103,13 @@ class _DetailState extends State<Detail> {
       body: FutureBuilder<Movie>(
         future: fetchMovieDetails(),
         builder: (context, snapshot) {
-          if (snapshot.connectionState != ConnectionState.done) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
+          }
+          if (snapshot.hasError) {
+            return Center(
+                child: Text('Error: ${snapshot.error}',
+                    style: const TextStyle(color: Colors.red)));
           }
           if (!snapshot.hasData) {
             return const Center(
@@ -59,14 +117,24 @@ class _DetailState extends State<Detail> {
           }
 
           final movie = snapshot.data!;
+
+          // Inisialisasi atau perbarui YouTubeController di sini
+          // Panggil initializeYoutubePlayer setiap kali data movie berubah
+          initializeYoutubePlayer(movie.trailerUrl);
+
           return SingleChildScrollView(
             padding: const EdgeInsets.all(16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Center(
-                  child: Image.network(movie.posterUrl,
-                      errorBuilder: (_, __, ___) => const Icon(Icons.movie)),
+                  child: Image.network(
+                    movie.posterUrl,
+                    errorBuilder: (_, __, ___) => const Icon(Icons.movie,
+                        size: 150, color: Colors.white70),
+                    height: 300,
+                    fit: BoxFit.cover,
+                  ),
                 ),
                 const SizedBox(height: 12),
                 Row(
@@ -75,8 +143,10 @@ class _DetailState extends State<Detail> {
                     Expanded(
                       child: Text(
                         movie.title,
-                        style:
-                            const TextStyle(fontSize: 22, color: Colors.white),
+                        style: const TextStyle(
+                            fontSize: 22,
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold),
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -84,7 +154,17 @@ class _DetailState extends State<Detail> {
                     IconButton(
                       alignment: Alignment.bottomRight,
                       onPressed: () {
-                        // Toggle favorite status
+                        setState(() {
+                          isFav = !isFav;
+                        });
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(isFav
+                                ? 'Ditambahkan ke favorit!'
+                                : 'Dihapus dari favorit!'),
+                            duration: const Duration(seconds: 1),
+                          ),
+                        );
                       },
                       icon: Icon(
                         isFav ? Icons.star : Icons.star_border,
@@ -96,10 +176,17 @@ class _DetailState extends State<Detail> {
                   ],
                 ),
                 Text(movie.genre,
-                    style: const TextStyle(color: Colors.white70)),
+                    style:
+                        const TextStyle(color: Colors.white70, fontSize: 16)),
                 const SizedBox(height: 16),
+                const Text('Synopsis:',
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold)),
+                const SizedBox(height: 4),
                 Text(movie.synopsis,
-                    style: const TextStyle(color: Colors.white)),
+                    style: const TextStyle(color: Colors.white, fontSize: 14)),
                 const SizedBox(height: 16),
                 Text('Director: ${movie.director}',
                     style: const TextStyle(color: Colors.white)),
@@ -110,18 +197,89 @@ class _DetailState extends State<Detail> {
                 Text('Release: ${movie.releaseDate}',
                     style: const TextStyle(color: Colors.white)),
                 const SizedBox(height: 16),
+                const Text('Cast:',
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold)),
+                const SizedBox(height: 4),
                 Wrap(
                   spacing: 8,
+                  runSpacing: 4,
                   children: movie.cast
-                      .map((actor) => Chip(label: Text(actor)))
+                      .map((actor) => Chip(
+                            label: Text(actor,
+                                style: const TextStyle(color: Colors.white)),
+                            backgroundColor: Colors.blueGrey.withOpacity(0.4),
+                          ))
                       .toList(),
                 ),
-                const SizedBox(height: 16),
-                if (movie.trailerUrl.isNotEmpty)
+                const SizedBox(height: 20),
+                // Tampilkan YoutubePlayer hanya jika _youtubeController tidak null
+                if (_youtubeController != null &&
+                    movie.trailerUrl.isNotEmpty &&
+                    YoutubePlayer.convertUrlToId(movie.trailerUrl) != null)
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text('Trailer:',
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold)),
+                      const SizedBox(height: 10),
+                      YoutubePlayer(
+                        controller:
+                            _youtubeController!, // Gunakan operator ! karena sudah dicheck null
+                        showVideoProgressIndicator: true,
+                        progressIndicatorColor: Colors.amber,
+                        progressColors: const ProgressBarColors(
+                          playedColor: Colors.amber,
+                          handleColor: Colors.amberAccent,
+                        ),
+                        onReady: () {
+                          WidgetsBinding.instance.addPostFrameCallback((_) {
+                            if (!_isPlayerReady) {
+                              setState(() {
+                                _isPlayerReady = true;
+                              });
+                            }
+                          });
+                        },
+                        bottomActions: [
+                          CurrentPosition(),
+                          ProgressBar(),
+                          const RemainingDuration(),
+                          FullScreenButton(),
+                        ],
+                      ),
+                      const SizedBox(height: 10),
+                      ElevatedButton.icon(
+                        onPressed: () =>
+                            _launchUrlExternal(context, movie.trailerUrl),
+                        icon: const Icon(Icons.open_in_new),
+                        label: const Text("Open Trailer in Browser"),
+                        style: ElevatedButton.styleFrom(
+                          minimumSize: const Size.fromHeight(40),
+                        ),
+                      ),
+                    ],
+                  )
+                else
                   ElevatedButton.icon(
-                    onPressed: () => _launchTrailer(context, movie.trailerUrl),
-                    icon: const Icon(Icons.play_arrow),
-                    label: const Text("Watch Trailer"),
+                    onPressed: () {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                            content: Text(
+                                'Trailer tidak tersedia atau URL tidak valid.')),
+                      );
+                    },
+                    icon: const Icon(Icons.info_outline),
+                    label: const Text("Trailer Not Available"),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.grey,
+                      minimumSize: const Size.fromHeight(40),
+                    ),
                   ),
               ],
             ),
