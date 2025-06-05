@@ -14,7 +14,7 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  PageController _pageController = PageController(viewportFraction: 0.85);
+  final PageController _pageController = PageController(viewportFraction: 0.85);
 
   Future<List<Movie>> fetchAllMovies() async {
     final rawList = await ApiService.fetchMovies('');
@@ -33,7 +33,7 @@ class _HomeState extends State<Home> {
       allMovies.shuffle(Random());
       return allMovies.take(5).toList();
     } catch (e) {
-      print('Error loading random featured movies: $e');
+      debugPrint('Error loading random featured movies: $e');
       return [];
     }
   }
@@ -119,7 +119,7 @@ class _HomeState extends State<Home> {
                         fit: BoxFit.cover,
                         // Tambahkan errorBuilder untuk gambar yang gagal dimuat
                         onError: (exception, stackTrace) {
-                          print('Error loading image: $exception');
+                          debugPrint('Error loading image: $exception');
                         },
                       ),
                     ),
@@ -263,7 +263,29 @@ class _HomeState extends State<Home> {
               child: CustomScrollView(
                 slivers: [
                   SliverToBoxAdapter(
-                    child: _carouselBanner(),
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(
+                        'Random Movies ',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                  SliverToBoxAdapter(child: _carouselBanner()),
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(
+                        "All Movies",
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
                   ),
                   FutureBuilder<List<Movie>>(
                     future: fetchAllMovies(),
