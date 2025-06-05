@@ -20,11 +20,21 @@ class _DetailState extends State<Detail> {
 
   void _launchTrailer(BuildContext context, String url) async {
     final uri = Uri.tryParse(url);
-    if (uri != null && await canLaunchUrl(uri)) {
-      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    if (uri != null) {
+      try {
+        final launched = await launchUrl(
+          uri,
+          mode: LaunchMode.platformDefault, // atau coba inAppBrowserView
+        );
+        if (!launched) throw 'Could not launch';
+      } catch (_) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Gagal membuka trailer')),
+        );
+      }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Cannot open trailer')),
+        const SnackBar(content: Text('URL tidak valid')),
       );
     }
   }

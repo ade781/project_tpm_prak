@@ -1,0 +1,148 @@
+{
+  "type": "FeatureCollection",
+  "generator": "overpass-turbo",
+  "copyright": "The data included in this document is from www.openstreetmap.org. The data is made available under ODbL.",
+  "timestamp": "2025-06-04T13:53:44Z",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/121677828",
+        "addr:city": "Yogyakarta",
+        "addr:housenumber": "104",
+        "addr:postcode": "55221",
+        "addr:street": "Jalan Urip Sumoharjo",
+        "air_conditioning": "yes",
+        "amenity": "cinema",
+        "brand": "Cinema XXI",
+        "brand:wikidata": "Q4630986",
+        "building": "yes",
+        "building:levels": "2",
+        "building:roof": "concrete",
+        "building:structure": "reinforced_masonry",
+        "building:use": "commercial",
+        "building:walls": "brick",
+        "name": "Empire XXI",
+        "payment:cash": "yes",
+        "payment:credit_cards": "yes",
+        "phone": "+62 274 551021",
+        "screen": "6",
+        "short_name": "XXI",
+        "wheelchair": "limited",
+        "wikipedia": "id:21 Cineplex"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              110.3864826,
+              -7.7833076
+            ],
+            [
+              110.386475,
+              -7.7835102
+            ],
+            [
+              110.3863993,
+              -7.7835074
+            ],
+            [
+              110.3863877,
+              -7.7838169
+            ],
+            [
+              110.3869571,
+              -7.7838379
+            ],
+            [
+              110.3869619,
+              -7.7837101
+            ],
+            [
+              110.3869652,
+              -7.7836217
+            ],
+            [
+              110.3869764,
+              -7.7833258
+            ],
+            [
+              110.386732,
+              -7.7833168
+            ],
+            [
+              110.3864826,
+              -7.7833076
+            ]
+          ]
+        ]
+      },
+      "id": "way/121677828"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/779341107",
+        "addr:city": "Yogyakarta",
+        "addr:postcode": "55000",
+        "addr:street": "Jalan Pangurakan",
+        "amenity": "cinema",
+        "building": "yes",
+        "name": "Bioskop Museum Sonobudoyo"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              110.3645459,
+              -7.802016
+            ],
+            [
+              110.3641515,
+              -7.801989
+            ],
+            [
+              110.3641479,
+              -7.8020407
+            ],
+            [
+              110.3645423,
+              -7.8020677
+            ],
+            [
+              110.3645459,
+              -7.802016
+            ]
+          ]
+        ]
+      },
+      "id": "way/779341107"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/3856970145",
+        "air_conditioning": "yes",
+        "amenity": "cinema",
+        "brand": "씨제이 씨지브이)㈜",
+        "brand:en": "CGV Cinema",
+        "brand:ko": "씨제이 씨지브이)㈜",
+        "brand:wikidata": "Q5012261",
+        "name": "CGV Blitz Cinema",
+        "name:en": "CGV Cinema",
+        "name:ko": "씨제이 씨지브이)㈜",
+        "website": "https://www.cgvblitz.com"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          110.4139132,
+          -7.7793913
+        ]
+      },
+      "id": "node/3856970145"
+    }
+  ]
+}
