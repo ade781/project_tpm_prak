@@ -258,7 +258,10 @@ class _HomeState extends State<Home> {
         ),
         body: Column(
           children: [
-            _searchBar(),
+            Padding(
+              padding: const EdgeInsets.only(top: 8.0),
+              child: _searchBar(),
+            ),
             Expanded(
               child: CustomScrollView(
                 slivers: [
