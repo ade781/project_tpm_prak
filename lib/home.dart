@@ -3,7 +3,6 @@ import 'package:project_tpm_prak/detail.dart';
 import 'package:project_tpm_prak/models/movie.dart';
 import 'package:project_tpm_prak/searchPage.dart';
 import 'package:project_tpm_prak/services/api_service.dart';
-import 'map_page.dart';
 import 'dart:math';
 
 class Home extends StatefulWidget {

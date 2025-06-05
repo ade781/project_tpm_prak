@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:project_tpm_prak/bottomNavBar.dart';
-import 'package:project_tpm_prak/home.dart';
 
 void main() {
   runApp(const MyApp());
