@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:project_tpm_prak/login.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Profile extends StatefulWidget {
   const Profile({super.key});
@@ -8,6 +10,38 @@ class Profile extends StatefulWidget {
 }
 
 class _ProfileState extends State<Profile> {
+  String? _username;
+  String? _email;
+  String? _id;
+
+  Future<void> _logout(BuildContext context) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.clear();
+
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => const LoginScreen()),
+    );
+  }
+
+  Future<void> _loadUserData() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? username = prefs.getString('username');
+    String? email = prefs.getString('email');
+    String? id = prefs.getString('id');
+    setState(() {
+      _username = username;
+      _email = email;
+      _id = id;
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserData();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -15,23 +49,29 @@ class _ProfileState extends State<Profile> {
         title: const Text('Profile'),
         centerTitle: true,
       ),
-      body: Center(
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            CircleAvatar(
-              radius: 50,
-              backgroundImage: AssetImage('assets/profile_picture.png'),
+            Text(
+              'Username: ${_username ?? 'Loading...'}',
+              style: const TextStyle(fontSize: 18),
             ),
-            const SizedBox(height: 20),
-            const Text(
-              'John Doe',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            const SizedBox(height: 8),
+            Text(
+              'Email: ${_email ?? 'Loading...'}',
+              style: const TextStyle(fontSize: 18),
             ),
-            const SizedBox(height: 10),
-            const Text(
-              'Flutter Developer',
-              style: TextStyle(fontSize: 18, color: Colors.grey),
+            const SizedBox(height: 8),
+            Text(
+              'ID: ${_id ?? 'Loading...'}',
+              style: const TextStyle(fontSize: 18),
+            ),
+            const Spacer(),
+            ElevatedButton(
+              onPressed: () => _logout(context),
+              child: const Text('Logout'),
             ),
           ],
         ),
