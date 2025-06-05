@@ -47,8 +47,7 @@ class _HomeState extends State<Home> {
             height: 180,
             child: Center(
               child: CircularProgressIndicator(
-                valueColor:
-                    AlwaysStoppedAnimation<Color>(Colors.blueGrey[700]!),
+                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
               ),
             ),
           );
@@ -243,18 +242,6 @@ class _HomeState extends State<Home> {
       child: Scaffold(
         appBar: AppBar(
           title: const Text('Movie App'),
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.map),
-              tooltip: 'Buka Peta Bioskop',
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const MapPage()),
-                );
-              },
-            ),
-          ],
         ),
         body: Column(
           children: [
