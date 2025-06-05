@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:project_tpm_prak/favoriteLogic.dart';
 import 'package:project_tpm_prak/models/movie.dart';
 import 'package:project_tpm_prak/services/api_service.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -17,10 +18,12 @@ class _DetailState extends State<Detail> {
   // Ubah dari 'late' menjadi nullable
   YoutubePlayerController? _youtubeController;
   bool _isPlayerReady = false;
+  final Favoritelogic _favoriteLogic = Favoritelogic();
 
   @override
   void initState() {
     super.initState();
+    _favoriteLogic.initialize(); // Inisialisasi favorit logic
     // Tidak perlu inisialisasi di sini karena akan dilakukan di FutureBuilder
   }
 
@@ -117,6 +120,7 @@ class _DetailState extends State<Detail> {
           }
 
           final movie = snapshot.data!;
+          final isFav = _favoriteLogic.isFavorited(widget.id);
 
           // Inisialisasi atau perbarui YouTubeController di sini
           // Panggil initializeYoutubePlayer setiap kali data movie berubah
@@ -154,12 +158,11 @@ class _DetailState extends State<Detail> {
                     IconButton(
                       alignment: Alignment.bottomRight,
                       onPressed: () {
-                        setState(() {
-                          isFav = !isFav;
-                        });
+                        _favoriteLogic.toggleFavorite(widget.id);
+                        setState(() {});
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
-                            content: Text(isFav
+                            content: Text(!isFav
                                 ? 'Ditambahkan ke favorit!'
                                 : 'Dihapus dari favorit!'),
                             duration: const Duration(seconds: 1),
