@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:project_tpm_prak/models/boxes.dart';
 import 'package:project_tpm_prak/models/favorite.dart';
@@ -10,7 +11,7 @@ class Favoritelogic {
 
   Future<void> initialize() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    userId = prefs.getString('username') ?? 'User';
+    userId = prefs.getString('id') ?? '0';
 
     favBox = Hive.box<Favorite>(HiveBox.favorites);
     loadFavorites();
@@ -19,6 +20,7 @@ class Favoritelogic {
   void loadFavorites() {
     final allFavs = favBox.values.toList();
     userFavorites = allFavs.where((f) => f.userId == userId).toList();
+    debugPrint("Loaded ${userFavorites.length} favorites for user $userId");
   }
 
   bool isFavorited(String movId) {
@@ -34,9 +36,10 @@ class Favoritelogic {
       await existing.delete(); // Jika sudah ada, hapus
     } else {
       await favBox.add(
-          Favorite(userId: userId!, movieId: movId)); // Jika belum, tambahkan
+          Favorite(userId: userId??"0", movieId: movId)); // Jika belum, tambahkan
     }
 
     loadFavorites(); // Refresh tampilan
   }
+  
 }

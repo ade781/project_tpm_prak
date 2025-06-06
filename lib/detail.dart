@@ -19,6 +19,7 @@ class _DetailState extends State<Detail> {
   YoutubePlayerController? _youtubeController;
   bool _isPlayerReady = false;
   final Favoritelogic _favoriteLogic = Favoritelogic();
+  bool berubah = false;
 
   @override
   void initState() {
@@ -102,6 +103,12 @@ class _DetailState extends State<Detail> {
       appBar: AppBar(
         backgroundColor: Colors.blueGrey,
         title: const Text("Movie Detail"),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pop(context, berubah);
+          },
+        ),
       ),
       body: FutureBuilder<Movie>(
         future: fetchMovieDetails(),
@@ -159,7 +166,9 @@ class _DetailState extends State<Detail> {
                       alignment: Alignment.bottomRight,
                       onPressed: () {
                         _favoriteLogic.toggleFavorite(widget.id);
-                        setState(() {});
+                        setState(() {
+                          berubah = true;
+                        });
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                             content: Text(!isFav
