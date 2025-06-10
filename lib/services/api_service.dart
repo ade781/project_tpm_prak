@@ -53,5 +53,4 @@ class ApiService {
     }
   }
 
-  static fetchMovieById(String id) {}
 }

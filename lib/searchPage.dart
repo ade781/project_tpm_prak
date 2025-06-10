@@ -53,7 +53,6 @@ class _SearchpageState extends State<Searchpage> {
       decoration: BoxDecoration(
         color: Colors.black.withOpacity(0.6),
         borderRadius: const BorderRadius.only(
-          topRight: Radius.circular(9),
           bottomLeft: Radius.circular(9),
         ),
         boxShadow: [
@@ -149,10 +148,10 @@ class _SearchpageState extends State<Searchpage> {
                         final movie = searchResults[index];
                         return Material(
                           color: Colors.transparent,
-                          borderRadius: BorderRadius.circular(8),
+                          borderRadius: BorderRadius.circular(9),
                           child: InkWell(
                             borderRadius: BorderRadius.circular(
-                                8), // harus konsisten dengan Card
+                                9), // harus konsisten dengan Card
                             onTap: () {
                               Navigator.push(
                                 context,
@@ -165,15 +164,15 @@ class _SearchpageState extends State<Searchpage> {
                               color: Colors.white10,
                               margin: const EdgeInsets.symmetric(vertical: 6),
                               shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8),
+                                borderRadius: BorderRadius.circular(9),
                               ),
                               child: Row(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   ClipRRect(
                                     borderRadius: const BorderRadius.only(
-                                      topLeft: Radius.circular(8),
-                                      bottomLeft: Radius.circular(8),
+                                      topLeft: Radius.circular(9),
+                                      bottomLeft: Radius.circular(9),
                                     ),
                                     child: Stack(
                                       children: [
@@ -208,7 +207,7 @@ class _SearchpageState extends State<Searchpage> {
                                   Expanded(
                                     child: Padding(
                                       padding: const EdgeInsets.symmetric(
-                                          vertical: 8),
+                                          vertical: 9),
                                       child: Column(
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
